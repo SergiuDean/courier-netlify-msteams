@@ -10,10 +10,12 @@ class BotActivityHandler extends TeamsActivityHandler {
     this.onMessage(async (context, next) => {
       TurnContext.removeRecipientMention(context.activity);
       const text = context.activity.text.trim().toLocaleLowerCase();
-      if (text.includes("add-user") || text.includes("add-channel")) {
+      if (text.includes("show-user") || text.includes("show-channel")) {
         await this.updateCourierProfile(context);
       } else if (text === "test") {
-        await context.sendActivity(`Your bot has been successfully added.`);
+        await context.sendActivity(`Gravity bot has been successfully added.`);
+      } else if (text === "info") {
+        await context.sendActivity("service url: "+service_url+"\ntenant id: "+tenant_id+"\nuser id: "+context.activity.from.id);
       }
 
       await next();
@@ -36,34 +38,34 @@ class BotActivityHandler extends TeamsActivityHandler {
     const text = context.activity.text.trim();
     const [cmd, recipientId] = text.split(" ");
 
-    if (cmd.toLowerCase() === "add-channel") {
+    if (cmd.toLowerCase() === "show-channel") {
       if (!context.activity.channelData.channel) {
         await context.sendActivity(
-          `add-channel must be called from a channel.`
+          `show-channel must be called from a channel.`
         );
         return;
       }
-      profile.ms_teams.channel_id = context.activity.channelData.channel.id;
-    } else if (cmd.toLowerCase() === "add-user") {
-      profile.ms_teams.user_id = context.activity.from.id;
+      await context.sendActivity("channel id: "+context.activity.channelData.channel.id);
+    } else if (cmd.toLowerCase() === "show-user") {
+      await context.sendActivity("channel id: "+context.activity.from.id);
     } else {
       await context.sendActivity(
-        `Could not update Courier Profile for ${recipientId}.`
+        `Error. Unsupported action.`
       );
       return;
     }
 
-    try {
-      await courier.mergeProfile({
-        recipientId,
-        profile
-      });
+//     try {
+//       await courier.mergeProfile({
+//         recipientId,
+//         profile
+//       });
 
-      await context.sendActivity(`Your profile has been updated.`);
-    } catch (err) {
-      console.log(err);
-      await context.sendActivity(`An error occurred updating your profile.`);
-    }
+//       await context.sendActivity(`Your profile has been updated.`);
+//     } catch (err) {
+//       console.log(err);
+//       await context.sendActivity(`An error occurred updating your profile.`);
+//     }
   }
 }
 
