@@ -47,7 +47,7 @@ class BotActivityHandler extends TeamsActivityHandler {
       }
       await context.sendActivity("channel id: "+context.activity.channelData.channel.id);
     } else if (cmd.toLowerCase() === "show-user") {
-      await context.sendActivity("channel id: "+context.activity.from.id);
+      await context.sendActivity("user id: "+context.activity.from.id);
     } else {
       await context.sendActivity(
         `Error. Unsupported action.`
